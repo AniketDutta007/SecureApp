@@ -2,6 +2,7 @@ package com.nrifintech.training.secureapp.config;
 
 import com.nrifintech.training.secureapp.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.modelmapper.ModelMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -19,14 +20,16 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 public class ApplicationConfiguration {
     private final UserRepository userRepository;
     @Bean
+    public ModelMapper modelMapper() {
+        return new ModelMapper();
+    }
+    @Bean
     public UserDetailsService userDetailsService() {
-        return new UserDetailsService() {
-            @Override
-            public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-                return userRepository.
-                        findUserByEmail(username)
-                        .orElseThrow(()->new UsernameNotFoundException("User not found"));
-            }
+        return username -> {
+            UserDetails user = userRepository.
+                    findUserByEmail(username)
+                    .orElseThrow(()->new UsernameNotFoundException("User not found"));
+            return user;
         };
     }
     @Bean
