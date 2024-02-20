@@ -1,5 +1,7 @@
 package com.nrifintech.training.secureapp.config;
 
+import com.nrifintech.training.secureapp.models.Role;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -23,11 +25,22 @@ public class SecurityConfiguration {
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth.
                         requestMatchers("/api/v1/auth/**").permitAll().
-                        anyRequest().authenticated()
+                        requestMatchers("/api/v1/user/**").hasRole(Role.USER.getAuthority()).
+                        requestMatchers("/api/v1/admin/**").hasRole(Role.ADMIN.getAuthority()).
+                        anyRequest().permitAll()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .exceptionHandling(
+                        httpSecurityExceptionHandlingConfigurer ->
+                                httpSecurityExceptionHandlingConfigurer.
+                                        accessDeniedHandler((request, response, accessDeniedException) -> {
+                                                    System.err.println(accessDeniedException);
+                                                    response.sendError(HttpServletResponse.SC_FORBIDDEN);
+                                                }
+                                        )
+                );
         return http.build();
     }
 }

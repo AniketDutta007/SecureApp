@@ -1,5 +1,6 @@
 package com.nrifintech.training.secureapp.config;
 
+import com.nrifintech.training.secureapp.models.Role;
 import com.nrifintech.training.secureapp.services.JWTService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
@@ -8,6 +9,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -53,6 +55,8 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
                         new WebAuthenticationDetailsSource()
                                 .buildDetails(request)
                 );
+                System.out.println(authenticationToken.isAuthenticated());
+                System.out.println(authenticationToken);
                 SecurityContextHolder.getContext().setAuthentication(authenticationToken);
             }
         }
