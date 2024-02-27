@@ -51,7 +51,7 @@ public class SecurityConfiguration {
                                 httpSecurityExceptionHandlingConfigurer.
                                         accessDeniedHandler((request, response, accessDeniedException) -> {
                                                     response.sendError(HttpServletResponse.SC_FORBIDDEN);
-                                                }
+                                                 }
                                         )
                 );
         return http.build();
